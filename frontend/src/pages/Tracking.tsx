@@ -29,26 +29,6 @@ const Tracking: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Use the live tracking hook
-  const {
-    currentLocation,
-    routePoints,
-    fuelData,
-    isTracking,
-    lastUpdate,
-    estimatedArrival,
-    distanceRemaining,
-    averageSpeed,
-    totalDistance,
-    startTracking,
-    stopTracking,
-    isConnected,
-  } = useLiveTracking({ selectedTrip });
-
-  useEffect(() => {
-    fetchActiveTrips();
-  }, [fetchActiveTrips]);
-
   const fetchActiveTrips = useCallback(async () => {
     try {
       setIsLoading(true);
@@ -68,6 +48,27 @@ const Tracking: React.FC = () => {
       setIsLoading(false);
     }
   }, [selectedTrip]);
+
+  // Use the live tracking hook
+  const liveTracking = useLiveTracking({ selectedTrip });
+  const {
+    currentLocation,
+    routePoints,
+    fuelData,
+    isTracking,
+    lastUpdate,
+    estimatedArrival,
+    distanceRemaining,
+    averageSpeed,
+    totalDistance,
+    startTracking,
+    stopTracking,
+    isConnected,
+  } = liveTracking;
+
+  useEffect(() => {
+    fetchActiveTrips();
+  }, [fetchActiveTrips]);
 
   const handleStartTracking = async () => {
     if (!selectedTrip) return;

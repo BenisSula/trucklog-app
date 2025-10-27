@@ -33,6 +33,19 @@ const Settings: React.FC = () => {
   const [lastSyncTime, setLastSyncTime] = useState<Date | null>(null);
   const [isSyncing, setIsSyncing] = useState(false);
 
+  // Sync function (moved before useEffect)
+  const syncWithBackend = useCallback(async () => {
+    try {
+      // Sync driver profile settings with backend
+      await apiService.updateDriverProfile({
+        timezone: settings.timezone,
+        cycle_type: settings.hos.cycleType,
+      });
+    } catch (error) {
+      console.error('Backend sync failed:', error);
+    }
+  }, [settings.timezone, settings.hos.cycleType]);
+
   // Auto-sync settings with backend
   useEffect(() => {
     const syncSettings = async () => {
@@ -91,18 +104,6 @@ const Settings: React.FC = () => {
     updateSetting('units', units);
     toast.success(`Units changed to ${units === 'metric' ? 'Metric' : 'Imperial'}`);
   };
-
-  const syncWithBackend = useCallback(async () => {
-    try {
-      // Sync driver profile settings with backend
-      await apiService.updateDriverProfile({
-        timezone: settings.timezone,
-        cycle_type: settings.hos.cycleType,
-      });
-    } catch (error) {
-      console.error('Backend sync failed:', error);
-    }
-  }, [settings.timezone, settings.hos.cycleType]);
 
   const handleRefresh = async () => {
     try {
