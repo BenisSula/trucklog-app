@@ -182,7 +182,7 @@ export const useWebSocket = (options: UseWebSocketOptions = {}) => {
         }
       });
     }
-  }, [status.isConnected]); // Only depend on connection status
+  }, [status.isConnected, channels, subscribe]);
 
   // Cleanup on unmount
   useEffect(() => {

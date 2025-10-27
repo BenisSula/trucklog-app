@@ -134,10 +134,7 @@ const LiveMap: React.FC<LiveMapProps> = ({
     mapService.toLatLngTuple(point)
   );
 
-  // Handle map errors
-  const handleMapError = () => {
-    setMapError(true);
-  };
+
 
   // If map fails to load, show fallback
   if (mapError) {
