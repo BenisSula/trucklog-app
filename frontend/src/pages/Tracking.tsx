@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Navigation,
   MapPin,
@@ -47,9 +47,9 @@ const Tracking: React.FC = () => {
 
   useEffect(() => {
     fetchActiveTrips();
-  }, []);
+  }, [fetchActiveTrips]);
 
-  const fetchActiveTrips = async () => {
+  const fetchActiveTrips = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
@@ -67,7 +67,7 @@ const Tracking: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [selectedTrip]);
 
   const handleStartTracking = async () => {
     if (!selectedTrip) return;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Settings as SettingsIcon,
   Palette,
@@ -55,7 +55,7 @@ const Settings: React.FC = () => {
     syncSettings();
 
     return () => clearInterval(interval);
-  }, [settings]);
+  }, [settings, syncWithBackend]);
 
   // Handle theme changes
   useEffect(() => {
@@ -77,7 +77,7 @@ const Settings: React.FC = () => {
       // Manual theme selection
       updateSetting('darkMode', settings.theme === 'dark');
     }
-  }, [settings.theme]);
+  }, [settings.theme, updateSetting]);
 
   // Handle language changes
   const handleLanguageChange = (language: string) => {
@@ -92,7 +92,7 @@ const Settings: React.FC = () => {
     toast.success(`Units changed to ${units === 'metric' ? 'Metric' : 'Imperial'}`);
   };
 
-  const syncWithBackend = async () => {
+  const syncWithBackend = useCallback(async () => {
     try {
       // Sync driver profile settings with backend
       await apiService.updateDriverProfile({
@@ -102,7 +102,7 @@ const Settings: React.FC = () => {
     } catch (error) {
       console.error('Backend sync failed:', error);
     }
-  };
+  }, [settings.timezone, settings.hos.cycleType]);
 
   const handleRefresh = async () => {
     try {
