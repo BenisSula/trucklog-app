@@ -96,7 +96,6 @@ const LiveMap: React.FC<LiveMapProps> = ({
   const mapRef = useRef<any>(null);
   const [mapCenter, setMapCenter] = useState<LatLngTuple>([40.7128, -74.0060]); // Default to NYC
   const [mapZoom, setMapZoom] = useState(13);
-  const [mapError] = useState(false);
   const [mapLoaded, setMapLoaded] = useState(false);
 
   // Update map center when current location changes
@@ -133,53 +132,6 @@ const LiveMap: React.FC<LiveMapProps> = ({
   const routeLine: LatLngTuple[] = routePoints.map(point => 
     mapService.toLatLngTuple(point)
   );
-
-
-
-  // If map fails to load, show fallback
-  if (mapError) {
-    return (
-      <div className={`relative ${className}`}>
-        <div className="bg-neutral-100 rounded-lg h-full flex items-center justify-center border-2 border-dashed border-neutral-300">
-          <div className="text-center p-8">
-            <div className="text-6xl mb-4">🗺️</div>
-            <h4 className="text-lg font-medium text-neutral-600 mb-2">Map Loading Error</h4>
-            <p className="text-neutral-500 mb-4">
-              Unable to load interactive map. Showing location data below.
-            </p>
-            {currentLocation && (
-              <div className="bg-white rounded-lg p-4 text-sm text-neutral-600 space-y-2">
-                <p><strong>📍 Location:</strong> {currentLocation.latitude.toFixed(6)}, {currentLocation.longitude.toFixed(6)}</p>
-                <p><strong>🚛 Speed:</strong> {currentLocation.speed?.toFixed(2) || 0} mph</p>
-                <p><strong>🧭 Heading:</strong> {currentLocation.heading?.toFixed(0) || 0}°</p>
-                <p><strong>⛽ Fuel:</strong> {currentLocation.fuelLevel?.toFixed(1) || 0}%</p>
-                <p><strong>🕐 Time:</strong> {new Date(currentLocation.timestamp).toLocaleTimeString()}</p>
-              </div>
-            )}
-          </div>
-        </div>
-        
-        {/* Location info footer */}
-        {currentLocation && (
-          <div className="absolute bottom-4 left-4 right-4 z-[1000] bg-white rounded-lg shadow-lg border border-gray-200 p-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <div className={`w-3 h-3 rounded-full animate-pulse ${isTracking ? 'bg-green-500' : 'bg-gray-400'}`}></div>
-                <span className="text-sm font-medium text-gray-900">
-                  {isTracking ? 'Live Tracking Active' : 'Tracking Inactive'}
-                </span>
-              </div>
-              <div className="flex items-center space-x-4 text-xs text-gray-600">
-                <span>📍 {currentLocation.latitude.toFixed(6)}, {currentLocation.longitude.toFixed(6)}</span>
-                <span>🚛 {currentLocation.speed?.toFixed(2) || 0} mph</span>
-                <span>⛽ {currentLocation.fuelLevel?.toFixed(1) || 0}%</span>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  }
 
   return (
     <div className={`relative ${className}`}>

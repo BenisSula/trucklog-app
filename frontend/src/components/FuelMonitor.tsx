@@ -43,7 +43,8 @@ const FuelMonitor: React.FC<FuelMonitorProps> = ({
     if (currentLocation) {
       loadNearbyStations();
     }
-  }, [currentLocation, loadNearbyStations]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentLocation]);
 
   const handleFuelStop = () => {
     const gallons = parseFloat(fuelAmount);
