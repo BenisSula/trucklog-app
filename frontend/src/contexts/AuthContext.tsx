@@ -73,16 +73,31 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     try {
       const response = await apiService.register(data);
       setUser(response.user);
-      toast.success('Account created successfully!');
+      toast.success('Account created successfully! Welcome to TruckLog!');
     } catch (error: any) {
-      let errorMessage = 'Registration failed';
+      let errorMessage = 'Registration failed. Please try again.';
       
       if (error.response?.data) {
-        const data = error.response.data;
-        if (data.email) errorMessage = `Email: ${data.email[0]}`;
-        else if (data.password) errorMessage = `Password: ${data.password[0]}`;
-        else if (data.detail) errorMessage = data.detail;
-        else if (data.non_field_errors) errorMessage = data.non_field_errors[0];
+        const responseData = error.response.data;
+        
+        // Handle field-specific errors
+        if (responseData.email) {
+          errorMessage = `Email error: ${responseData.email[0]}`;
+        } else if (responseData.password) {
+          errorMessage = `Password error: ${responseData.password[0]}`;
+        } else if (responseData.first_name) {
+          errorMessage = `First name error: ${responseData.first_name[0]}`;
+        } else if (responseData.last_name) {
+          errorMessage = `Last name error: ${responseData.last_name[0]}`;
+        } else if (responseData.phone_number) {
+          errorMessage = `Phone number error: ${responseData.phone_number[0]}`;
+        } else if (responseData.detail) {
+          errorMessage = responseData.detail;
+        } else if (responseData.non_field_errors) {
+          errorMessage = responseData.non_field_errors[0];
+        }
+      } else if (error.message) {
+        errorMessage = error.message;
       }
       
       setError(errorMessage);
