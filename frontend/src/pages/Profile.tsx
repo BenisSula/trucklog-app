@@ -150,6 +150,55 @@ const Profile: React.FC = () => {
     milesTotal: 0,
   });
 
+  // Validation functions (moved before useEffect hooks)
+  const validateProfileData = useCallback((): boolean => {
+    const errors: ValidationErrors = {};
+    
+    if (!profileData.first_name.trim()) {
+      errors.first_name = 'First name is required';
+    }
+    
+    if (!profileData.last_name.trim()) {
+      errors.last_name = 'Last name is required';
+    }
+    
+    if (!profileData.email.trim()) {
+      errors.email = 'Email is required';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profileData.email)) {
+      errors.email = 'Please enter a valid email address';
+    }
+    
+    if (profileData.phone_number && !/^\+?[\d\s\-()]+$/.test(profileData.phone_number)) {
+      errors.phone_number = 'Please enter a valid phone number';
+    }
+    
+    setProfileErrors(errors);
+    return Object.keys(errors).length === 0;
+  }, [profileData]);
+
+  const validateDriverData = useCallback((): boolean => {
+    const errors: ValidationErrors = {};
+    
+    if (driverData.cdl_expiry) {
+      const expiryDate = new Date(driverData.cdl_expiry);
+      const today = new Date();
+      if (expiryDate < today) {
+        errors.cdl_expiry = 'CDL expiry date cannot be in the past';
+      }
+    }
+    
+    if (driverData.medical_cert_expiry) {
+      const expiryDate = new Date(driverData.medical_cert_expiry);
+      const today = new Date();
+      if (expiryDate < today) {
+        errors.medical_cert_expiry = 'Medical certificate expiry date cannot be in the past';
+      }
+    }
+    
+    setDriverErrors(errors);
+    return Object.keys(errors).length === 0;
+  }, [driverData]);
+
   useEffect(() => {
     fetchProfileData();
   }, []);
@@ -263,54 +312,6 @@ const Profile: React.FC = () => {
       [name]: value
     }));
   };
-
-  const validateProfileData = useCallback((): boolean => {
-    const errors: ValidationErrors = {};
-    
-    if (!profileData.first_name.trim()) {
-      errors.first_name = 'First name is required';
-    }
-    
-    if (!profileData.last_name.trim()) {
-      errors.last_name = 'Last name is required';
-    }
-    
-    if (!profileData.email.trim()) {
-      errors.email = 'Email is required';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profileData.email)) {
-      errors.email = 'Please enter a valid email address';
-    }
-    
-    if (profileData.phone_number && !/^\+?[\d\s\-()]+$/.test(profileData.phone_number)) {
-      errors.phone_number = 'Please enter a valid phone number';
-    }
-    
-    setProfileErrors(errors);
-    return Object.keys(errors).length === 0;
-  }, [profileData]);
-
-  const validateDriverData = useCallback((): boolean => {
-    const errors: ValidationErrors = {};
-    
-    if (driverData.cdl_expiry) {
-      const expiryDate = new Date(driverData.cdl_expiry);
-      const today = new Date();
-      if (expiryDate < today) {
-        errors.cdl_expiry = 'CDL expiry date cannot be in the past';
-      }
-    }
-    
-    if (driverData.medical_cert_expiry) {
-      const expiryDate = new Date(driverData.medical_cert_expiry);
-      const today = new Date();
-      if (expiryDate < today) {
-        errors.medical_cert_expiry = 'Medical certificate expiry date cannot be in the past';
-      }
-    }
-    
-    setDriverErrors(errors);
-    return Object.keys(errors).length === 0;
-  }, [driverData]);
 
   // DRY principle: Reusable error handling function
   const handleApiError = (error: any, setErrors: (errors: ValidationErrors) => void, context: string) => {
