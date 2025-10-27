@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Fuel, TrendingUp, MapPin, DollarSign, Clock, AlertTriangle } from 'lucide-react';
 import { FuelData, FuelStop, RoutePoint, mapService } from '../services/mapService';
 import { CARD_STYLES, ICON_STYLES, BUTTON_STYLES } from '../config/theme';
@@ -23,14 +23,7 @@ const FuelMonitor: React.FC<FuelMonitorProps> = ({
   const [nearbyStations, setNearbyStations] = useState<FuelStop[]>([]);
   const [isLoadingStations, setIsLoadingStations] = useState(false);
 
-  // Load nearby fuel stations when location changes
-  useEffect(() => {
-    if (currentLocation) {
-      loadNearbyStations();
-    }
-  }, [currentLocation]);
-
-  const loadNearbyStations = async () => {
+  const loadNearbyStations = useCallback(async () => {
     if (!currentLocation) return;
     
     try {
@@ -43,7 +36,14 @@ const FuelMonitor: React.FC<FuelMonitorProps> = ({
     } finally {
       setIsLoadingStations(false);
     }
-  };
+  }, [currentLocation]);
+
+  // Load nearby fuel stations when location changes
+  useEffect(() => {
+    if (currentLocation) {
+      loadNearbyStations();
+    }
+  }, [currentLocation, loadNearbyStations]);
 
   const handleFuelStop = () => {
     const gallons = parseFloat(fuelAmount);
