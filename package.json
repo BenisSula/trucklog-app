@@ -1,0 +1,16 @@
+{
+  "name": "trucklog-app",
+  "version": "1.0.0",
+  "description": "TruckLog - Fleet Management System",
+  "scripts": {
+    "build": "cd frontend && npm install && npm run build",
+    "start": "cd frontend && npm start"
+  },
+  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BenisSula/trucklog-app.git"
+  },
+  "author": "Benis Sula",
+  "license": "MIT"
+}

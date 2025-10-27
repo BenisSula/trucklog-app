@@ -42,3 +42,4 @@ const AuthRedirect: React.FC<AuthRedirectProps> = ({
 
 export default AuthRedirect;
 
+

@@ -515,3 +515,4 @@ def _calculate_compliance_analytics(
 - **Advanced Workflows**: More sophisticated workflow management
 
 This Advanced HOS Compliance System provides a comprehensive, scalable, and secure solution for FMCSA compliance management, with advanced features for team driving, violation resolution, and compliance analytics.
+

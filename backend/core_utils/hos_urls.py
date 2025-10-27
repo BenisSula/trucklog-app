@@ -37,3 +37,4 @@ urlpatterns = [
     # Compliance summary
     path('compliance/summary/', HOSComplianceSummaryView.as_view(), name='hos-compliance-summary'),
 ]
+
