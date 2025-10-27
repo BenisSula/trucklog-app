@@ -96,7 +96,7 @@ const LiveMap: React.FC<LiveMapProps> = ({
   const mapRef = useRef<any>(null);
   const [mapCenter, setMapCenter] = useState<LatLngTuple>([40.7128, -74.0060]); // Default to NYC
   const [mapZoom, setMapZoom] = useState(13);
-  const [mapError, setMapError] = useState(false);
+  const [mapError] = useState(false);
   const [mapLoaded, setMapLoaded] = useState(false);
 
   // Update map center when current location changes
