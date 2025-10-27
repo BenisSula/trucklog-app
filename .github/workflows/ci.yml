@@ -1,0 +1,152 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  backend-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_trucklog_db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+    
+    - name: Install dependencies
+      run: |
+        cd backend
+        pip install -r requirements.txt
+    
+    - name: Run migrations
+      run: |
+        cd backend
+        python manage.py migrate
+      env:
+        DB_HOST: localhost
+        DB_NAME: test_trucklog_db
+        DB_USER: postgres
+        DB_PASSWORD: postgres
+        DB_PORT: 5432
+        SECRET_KEY: test-secret-key
+        DEBUG: 1
+        ALLOWED_HOSTS: localhost,127.0.0.1
+        REDIS_URL: redis://localhost:6379/0
+    
+    - name: Run tests
+      run: |
+        cd backend
+        python manage.py test
+      env:
+        DB_HOST: localhost
+        DB_NAME: test_trucklog_db
+        DB_USER: postgres
+        DB_PASSWORD: postgres
+        DB_PORT: 5432
+        SECRET_KEY: test-secret-key
+        DEBUG: 1
+        ALLOWED_HOSTS: localhost,127.0.0.1
+        REDIS_URL: redis://localhost:6379/0
+
+  frontend-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: frontend/package-lock.json
+    
+    - name: Install dependencies
+      run: |
+        cd frontend
+        npm install
+    
+    - name: Run tests
+      run: |
+        cd frontend
+        npm test -- --coverage --watchAll=false --passWithNoTests
+    
+    - name: Build
+      run: |
+        cd frontend
+        npm run build
+
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: frontend/package-lock.json
+    
+    - name: Install Python dependencies
+      run: |
+        cd backend
+        pip install -r requirements.txt
+    
+    - name: Install Node dependencies
+      run: |
+        cd frontend
+        npm install
+    
+    - name: Lint Python
+      run: |
+        cd backend
+        python -m flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        python -m black --check .
+        python -m isort --check-only .
+    
+    - name: Lint TypeScript
+      run: |
+        cd frontend
+        npm run lint
+
+
+
