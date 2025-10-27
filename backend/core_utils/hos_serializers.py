@@ -248,3 +248,4 @@ class AlertResolutionSerializer(serializers.Serializer):
     resolution_notes = serializers.CharField(max_length=1000)
     mark_as_read = serializers.BooleanField(default=True)
 
+

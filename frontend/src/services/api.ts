@@ -8,6 +8,9 @@ import axios, { AxiosInstance, AxiosResponse } from 'axios';
 // API Configuration
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
 
+// Demo mode - set to true when running without backend
+export const DEMO_MODE = !process.env.REACT_APP_API_URL || process.env.REACT_APP_API_URL === 'http://localhost:8000/api';
+
 // Create axios instance
 const api: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
@@ -269,6 +272,35 @@ export interface DutyStatus {
 class ApiService {
   // Authentication
   async login(credentials: LoginCredentials): Promise<{ user: User; tokens: AuthTokens }> {
+    // Demo mode - bypass API call
+    if (DEMO_MODE) {
+      const mockUser: User = {
+        id: 1,
+        email: 'sula.benis@gmail.com',
+        first_name: 'Benis',
+        last_name: 'Sula',
+        phone_number: '+1234567890',
+        license_number: 'CDL123456',
+        company_name: 'Demo Transport',
+        is_driver: true,
+        date_joined: new Date().toISOString(),
+        last_login: new Date().toISOString(),
+      };
+      
+      const mockTokens: AuthTokens = {
+        access: 'demo_access_token',
+        refresh: 'demo_refresh_token'
+      };
+      
+      localStorage.setItem('access_token', mockTokens.access);
+      localStorage.setItem('refresh_token', mockTokens.refresh);
+      
+      return {
+        user: mockUser,
+        tokens: mockTokens,
+      };
+    }
+    
     const response = await api.post('/users/auth/token/', credentials);
     const tokens = response.data;
     
@@ -286,6 +318,32 @@ class ApiService {
   }
 
   async register(data: RegisterData): Promise<{ user: User; tokens: AuthTokens }> {
+    // Demo mode
+    if (DEMO_MODE) {
+      const mockUser: User = {
+        id: 1,
+        email: data.email,
+        first_name: data.first_name,
+        last_name: data.last_name,
+        phone_number: data.phone_number || '',
+        license_number: data.license_number || '',
+        company_name: data.company_name || '',
+        is_driver: true,
+        date_joined: new Date().toISOString(),
+        last_login: new Date().toISOString(),
+      };
+      
+      const mockTokens: AuthTokens = {
+        access: 'demo_access_token',
+        refresh: 'demo_refresh_token'
+      };
+      
+      localStorage.setItem('access_token', mockTokens.access);
+      localStorage.setItem('refresh_token', mockTokens.refresh);
+      
+      return { user: mockUser, tokens: mockTokens };
+    }
+    
     const response = await api.post('/users/register/', data);
     const { user, tokens } = response.data;
     
@@ -302,6 +360,23 @@ class ApiService {
   }
 
   async getCurrentUser(): Promise<User> {
+    // Demo mode
+    if (DEMO_MODE) {
+      const mockUser: User = {
+        id: 1,
+        email: 'sula.benis@gmail.com',
+        first_name: 'Benis',
+        last_name: 'Sula',
+        phone_number: '+1234567890',
+        license_number: 'CDL123456',
+        company_name: 'Demo Transport',
+        is_driver: true,
+        date_joined: new Date().toISOString(),
+        last_login: new Date().toISOString(),
+      };
+      return mockUser;
+    }
+    
     const response: AxiosResponse<User> = await api.get('/users/profile/');
     return response.data;
   }
