@@ -40,7 +40,7 @@ const registerSchema = yup.object({
     .oneOf([yup.ref('password')], 'Passwords must match')
     .required('Please confirm your password'),
   phone_number: yup.string()
-    .matches(/^[\+]?[1-9][\d]{0,15}$/, 'Please enter a valid phone number')
+    .matches(/^[+]?[1-9][\d]{0,15}$/, 'Please enter a valid phone number')
     .optional(),
 });
 

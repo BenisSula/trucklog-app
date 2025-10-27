@@ -64,7 +64,7 @@ const LogSheets: React.FC = () => {
     }, 5 * 60 * 1000); // 5 minutes
     
     return () => clearInterval(refreshInterval);
-  }, []);
+  }, [isSubmitting, showAddForm]);
 
   // Listen for HOS updates from WebSocket
   useEffect(() => {
