@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   User, 
   Truck, 
@@ -167,7 +167,7 @@ const Profile: React.FC = () => {
     }, 2000); // 2 second debounce
 
     return () => clearTimeout(timeoutId);
-  }, [profileData, isSavingProfile]);
+  }, [profileData, isSavingProfile, validateProfileData]);
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -181,7 +181,7 @@ const Profile: React.FC = () => {
     }, 2000); // 2 second debounce
 
     return () => clearTimeout(timeoutId);
-  }, [driverData, isSavingDriver]);
+  }, [driverData, isSavingDriver, validateDriverData]);
 
   const fetchProfileData = async () => {
     try {
@@ -264,7 +264,7 @@ const Profile: React.FC = () => {
     }));
   };
 
-  const validateProfileData = (): boolean => {
+  const validateProfileData = useCallback((): boolean => {
     const errors: ValidationErrors = {};
     
     if (!profileData.first_name.trim()) {
@@ -287,9 +287,9 @@ const Profile: React.FC = () => {
     
     setProfileErrors(errors);
     return Object.keys(errors).length === 0;
-  };
+  }, [profileData]);
 
-  const validateDriverData = (): boolean => {
+  const validateDriverData = useCallback((): boolean => {
     const errors: ValidationErrors = {};
     
     if (driverData.cdl_expiry) {
@@ -310,7 +310,7 @@ const Profile: React.FC = () => {
     
     setDriverErrors(errors);
     return Object.keys(errors).length === 0;
-  };
+  }, [driverData]);
 
   // DRY principle: Reusable error handling function
   const handleApiError = (error: any, setErrors: (errors: ValidationErrors) => void, context: string) => {
